@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1aa7600e-bb2c-4cf3-81b7-1fe149150287" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="onerrorproagate1" doc:id="9c3b32a1-baec-451b-b19d-904cb4d66378" >
+		<http:listener doc:name="Listener" doc:id="c87cb745-892e-470b-867c-d2775ec0f226" config-ref="HTTP_Listener_config" path="/first"/>
+		<logger level="INFO" doc:name="Logger" doc:id="71c0f0b3-4c59-4f69-8c9d-e7cc290c6062" message="#[attributes.queryParams.mynum]"/>
+		<set-payload value='#["mypayload"]' doc:name="Set Payload" doc:id="0438aa24-f85a-4361-baf5-91c73494f64f" />
+		<validation:is-number doc:name="Is number" doc:id="f63f4402-c8ef-495c-a37e-d4adae5d9a07" value="#[attributes.queryParams.mynum]" numberType="INTEGER" message='#["this is not a number"]'/>
+		<ee:transform doc:name="Transform Message" doc:id="d3da17eb-1827-4aea-98fb-09bc0905ae44" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+(attributes.queryParams.mynum as Number *2)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0cfc32ca-cdd0-4009-8d3a-cbf4d4cc6c5d" type="ANY">
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="onerrorproagate2" doc:id="869b1cf6-430c-42f8-ae27-3ecdc677bdcf" >
+		<http:listener doc:name="Listener" doc:id="79364817-f2a2-418d-a7e0-dd9af7995cb5" config-ref="HTTP_Listener_config" path="/second"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2d3e33be-5d1a-4dc3-b5a6-3d4bfee6f1da" message="#[attributes.queryParams.mynum]"/>
+		<set-payload value='#["mypayload"]' doc:name="Set Payload" doc:id="c9abc73d-0aed-4e22-a960-feab7337a0f1" />
+		<validation:is-number doc:name="Is number" doc:id="81a4286c-1210-449e-a0ca-3a64560e37c8" value="#[attributes.queryParams.mynum]" numberType="INTEGER" message='#["this is not a number"]'/>
+		<ee:transform doc:name="Transform Message" doc:id="1ac7e01f-e05e-4c5f-b4d4-c720d304d8cb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+(attributes.queryParams.mynum as Number *2)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="41d8a66b-95d8-4661-abe5-5b8107e1a661" type="ANY">
+				<set-payload value='#["overriding original payload from errorcontinue block"]' doc:name="Set Payload" doc:id="bd924c39-56c9-402f-9aa3-ddd5339c97fc" />
+
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="onerrorpropagate3" doc:id="ad54614e-780a-48c8-a0db-0acb0b46865c" >
+		<http:listener doc:name="Listener" doc:id="fd96333d-857e-4d8b-9c15-6156c346afec" config-ref="HTTP_Listener_config" path="/three"/>
+		<set-payload value='#["payload before number validator"]' doc:name="Set Payload" doc:id="1261c189-cb53-41c3-aa5a-420bba1f3b2a" />
+		<try doc:name="Try" doc:id="69980d5e-b5c1-4b55-84c6-6a020dc8b587" >
+			<validation:is-number doc:name="Is number" doc:id="5ecd7435-dbff-4fb6-9595-df86b05a50ae" value="#[attributes.queryParams.mynum]" numberType="INTEGER" />
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7213dbf1-7a67-4b67-ad44-6bffa8ce11c0" >
+					<logger level="INFO" doc:name="Logger" doc:id="6e2a200b-9350-408c-a82a-ed4e1abdc128" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="71d0f458-dcf6-4600-bb20-58689757d550" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.mynum as Number *2]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="577b7e1c-fb6d-49d5-9d94-05e360e78a7d" >
+				<logger level="INFO" doc:name="Logger" doc:id="c8c3efac-2af5-4a6d-8139-2cfab4f0d4d5" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="ercontinue_flowref" doc:id="1754e12d-e919-463b-8ce1-866c9470c9b4" >
+		<http:listener doc:name="Listener" doc:id="7ef015de-3f44-4116-90a5-67942f4ef6fc" config-ref="HTTP_Listener_config" path="/flowreferror"/>
+		<set-payload value='#["nothing payload"]' doc:name="Set Payload" doc:id="34673f77-bca7-495c-805d-7a1e348dda53" />
+		<try doc:name="Try" doc:id="6728cb12-4c4b-42c1-ae81-775dd5411eba" >
+			<flow-ref doc:name="Flow Reference" doc:id="71215411-c811-4f1d-9ffa-c4f777684145" name="scattergat1Flow" />
+			<logger level="INFO" doc:name="Logger" doc:id="ee068520-cecc-4f3e-8b4b-c936337b7ded" />
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="73c00576-6486-44ef-96bb-4c36d04db71d" >
+					<logger level="INFO" doc:name="Logger" doc:id="c61e07d5-6cd5-4b90-a6c5-d4ee1a929f67" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<logger level="INFO" doc:name="Logger" doc:id="042a330d-1b9e-4fff-9807-a48c19abe5e0" message="after flowref"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d0a4d180-43f3-4417-a6a1-2258732ccef6">
+				<logger level="INFO" doc:name="Logger" doc:id="b7281e47-cf11-41b0-9716-52fdb9861b55" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="scattergat1Flow" doc:id="4aa118bc-860e-4b76-a7a3-b65b490a06c4" >
+		<validation:is-number doc:name="Is number" doc:id="93b653c3-d5f1-4658-acc1-14a19bc87853" value="#[attributes.queryParams.mynum]" numberType="INTEGER"/>
+		<logger level="INFO" doc:name="Logger" doc:id="90e01f0e-ff2f-4b65-8d47-78aa8db616a4" message="in private flow"/>
+	</flow>
+</mule>
