@@ -95,4 +95,9 @@ attributes.queryParams.mynum as Number *2]]></ee:set-payload>
 		<validation:is-number doc:name="Is number" doc:id="93b653c3-d5f1-4658-acc1-14a19bc87853" value="#[attributes.queryParams.mynum]" numberType="INTEGER"/>
 		<logger level="INFO" doc:name="Logger" doc:id="90e01f0e-ff2f-4b65-8d47-78aa8db616a4" message="in private flow"/>
 	</flow>
+	<flow name="testgit" doc:id="def7bb4f-843b-481a-b6df-3b89b7ca57fa" >
+		<http:listener doc:name="Listener" doc:id="6942e279-c59f-470d-8d2a-0095f029659d" config-ref="HTTP_Listener_config" path="/forgit"/>
+		<set-payload value='#["hahaha"]' doc:name="Set Payload" doc:id="11424a3d-4c02-4782-8d95-ae8f0970e90d" />
+		<logger level="INFO" doc:name="Logger" doc:id="b4363aa7-83d3-4e19-8574-a04b7f53fd9e" message="ok"/>
+	</flow>
 </mule>
