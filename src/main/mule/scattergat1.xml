@@ -104,8 +104,14 @@ attributes.queryParams.mynum as Number *2]]></ee:set-payload>
 		<http:listener doc:name="Listener" doc:id="189b2d8a-2d44-486f-806d-eb34a3e01f07" config-ref="HTTP_Listener_config" path="/test2"/>
 		<logger level="INFO" doc:name="Logger" doc:id="a4237a6e-289f-4c14-9c18-f71e7c8af024" />
 	</flow>
+
 	<flow name="git1" doc:id="537e85d3-3d65-4fc7-9599-c3d9723aa598" >
 		<http:listener doc:name="Listener" doc:id="189b2d8a-2d44-486f-806d-eb34a3e01f07" config-ref="HTTP_Listener_config" path="/git1"/>
+	<logger level="INFO" doc:name="Logger" doc:id="a4237a6e-289f-4c14-9c18-f71e7c8af024" />
+		</flow>
+	<flow name="git2" doc:id="537e85d3-3d65-4fc7-9599-c3d9723aa598" >
+		<http:listener doc:name="Listener" doc:id="189b2d8a-2d44-486f-806d-eb34a3e01f07" config-ref="HTTP_Listener_config" path="/git2"/>
+
 		<logger level="INFO" doc:name="Logger" doc:id="a4237a6e-289f-4c14-9c18-f71e7c8af024" />
 	</flow>
 </mule>
